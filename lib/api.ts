@@ -36,7 +36,7 @@ export async function uploadPDF(
     formData.append('file', file);
     formData.append('metadata', JSON.stringify(metadata));
 
-    const response = await fetch(`${API_BASE_URL}/api/parse/upload`, {
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: 'POST',
         body: formData,
     });
@@ -53,7 +53,7 @@ export async function uploadPDF(
  * Fetch a parsed paper by ID.
  */
 export async function getPaper(paperId: string): Promise<any> {
-    const response = await fetch(`${API_BASE_URL}/api/parse/papers/${paperId}`);
+    const response = await fetch(`${API_BASE_URL}/api/papers/${paperId}`);
 
     if (!response.ok) {
         const error = await response.json();
@@ -68,7 +68,7 @@ export async function getPaper(paperId: string): Promise<any> {
  */
 export async function checkHealth(): Promise<boolean> {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/parse/health`);
+        const response = await fetch(`${API_BASE_URL}/api/health`);
         return response.ok;
     } catch {
         return false;
