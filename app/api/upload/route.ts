@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import pdf from 'pdf-parse';
+const pdf = require('pdf-parse');
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
 function extractQuestions(text: string): any[] {
     // Split by question numbers (1, 2, 3, etc.)
-    const questionPattern = /(?:^|\n)(\d+)[\s.)]+(.*?)(?=\n\d+[\s.)]|$)/gs;
+    const questionPattern = /(?:^|\n)(\d+)[\s.)]+(.*?)(?=\n\d+[\s.)]|$)/g;
     const questions: any[] = [];
     let match;
     let order = 0;
@@ -121,9 +121,3 @@ async function storePaper(metadata: any, questions: any[]): Promise<string> {
 
     return paperId;
 }
-
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
