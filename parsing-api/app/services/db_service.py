@@ -18,6 +18,7 @@ class DatabaseService:
             settings.supabase_service_key
         )
         self.storage = StorageService()
+        self.storage.ensure_bucket_exists()
     
     async def store_parsed_paper(
         self, 

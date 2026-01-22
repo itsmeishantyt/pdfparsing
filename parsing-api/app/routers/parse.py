@@ -10,7 +10,7 @@ from app.services.pdf_parser import PDFParser
 from app.services.db_service import DatabaseService
 
 
-router = APIRouter(prefix="/api/parse", tags=["parsing"])
+router = APIRouter(prefix="/api", tags=["parsing"])
 
 
 @router.post("/upload", response_model=ParseResponse)
@@ -69,6 +69,9 @@ async def upload_and_parse_pdf(
         )
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"CRITICAL ERROR: {str(e)}")
         raise HTTPException(
             status_code=500,
             detail=f"Error processing PDF: {str(e)}"
