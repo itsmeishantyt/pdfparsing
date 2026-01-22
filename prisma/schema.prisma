@@ -1,0 +1,82 @@
+// Prisma schema for Economics A-Level past papers database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Paper {
+  id          String   @id @default(uuid())
+  title       String
+  examBoard   String   @map("exam_board")
+  subject     String
+  level       String
+  year        Int
+  session     String
+  paperNumber Int      @map("paper_number")
+  pdfUrl      String?  @map("pdf_url")
+  totalMarks  Int?     @map("total_marks")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+  
+  questions Question[]
+  
+  @@index([examBoard, year, session])
+  @@map("Paper")
+}
+
+model Question {
+  id             String   @id @default(uuid())
+  paperId        String   @map("paper_id")
+  questionNumber String   @map("question_number")
+  sequenceOrder  Int      @map("sequence_order")
+  marks          Int?
+  
+  paper   Paper              @relation(fields: [paperId], references: [id], onDelete: Cascade)
+  content QuestionContent[]
+  
+  @@index([paperId, sequenceOrder])
+  @@map("Question")
+}
+
+model QuestionContent {
+  id            String      @id @default(uuid())
+  questionId    String      @map("question_id")
+  sequenceOrder Int         @map("sequence_order")
+  contentType   ContentType @map("content_type")
+  
+  // Text content
+  text       String?  @db.Text
+  fontSize   Float?   @map("font_size")
+  fontFamily String?  @map("font_family")
+  isBold     Boolean  @default(false) @map("is_bold")
+  isItalic   Boolean  @default(false) @map("is_italic")
+  
+  // Layout preservation
+  x      Float?
+  y      Float?
+  width  Float?
+  height Float?
+  
+  // Image content
+  imageUrl    String? @map("image_url")
+  imageWidth  Int?    @map("image_width")
+  imageHeight Int?    @map("image_height")
+  altText     String? @map("alt_text")
+  
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  @@index([questionId, sequenceOrder])
+  @@map("QuestionContent")
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  TABLE
+  DIAGRAM
+  EQUATION
+}

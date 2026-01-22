@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Home page */
+.home-page {
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    color: #1a73e8;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.file-label {
+    cursor: pointer;
+}
+
+.file-input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.file-name {
+    margin-top: 8px;
+    color: #1a73e8;
+    font-size: 14px;
+}
+
+.metadata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.text-input,
+.select-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.text-input:focus,
+.select-input:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #1557b0;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+/* Paper page */
+.paper-page {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: #f5f5f5;
+}
+
+.paper-viewer {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.paper-header {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.paper-title {
+    font-size: 2rem;
+    color: #1a73e8;
+    margin-bottom: 16px;
+}
+
+.paper-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.total-marks {
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Question container styling */
+.question-container {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.question-number {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1a73e8;
+}
+
+.marks {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+.question-content {
+    position: relative;
+    line-height: 1.6;
+}
+
+.question-text {
+    display: inline;
+    margin-right: 4px;
+}
+
+/* Image styling */
+.question-image-wrapper,
+.question-diagram-wrapper {
+    margin: 16px 0;
+}
+
+.question-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+/* Loading and error states */
+.loading-container,
+.error-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1a73e8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-container h2 {
+    color: #c33;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .metadata-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .paper-title {
+        font-size: 1.5rem;
+    }
+
+    .container h1 {
+        font-size: 2rem;
+    }
+}
