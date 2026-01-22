@@ -15,11 +15,11 @@ class StorageService:
         self.client = create_client(supabase_url, supabase_key)
         self.bucket = os.environ.get("STORAGE_BUCKET", "question-images")
     
-    async def upload_image(
-        self, image_bytes: bytes, format: str, paper_id: str, 
+    def upload_image_sync(
+        self, image_bytes: bytes, format: str, paper_id: str,
         question_num: str, img_index: int
     ) -> str:
-        """Upload an image to Supabase Storage."""
+        """Upload an image to Supabase Storage (synchronous)."""
         filename = f"{paper_id}/{question_num}/img_{img_index}.{format}"
         
         self.client.storage.from_(self.bucket).upload(
@@ -41,35 +41,35 @@ class DatabaseService:
         self.client = create_client(supabase_url, supabase_key)
         self.storage = StorageService()
     
-    async def store_parsed_paper(
+    def store_parsed_paper_sync(
         self, parsed_data: Dict[str, Any], metadata: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Store a complete parsed paper in the database."""
+        """Store a complete parsed paper in the database (synchronous)."""
         paper_id = str(uuid.uuid4())
         title = metadata.get("title") or self._generate_title(metadata)
         
         paper_record = {
             "id": paper_id,
             "title": title,
-            "exam_board": metadata["exam_board"],
+            "exam_board": metadata.get("examBoard", metadata.get("exam_board")),
             "subject": metadata.get("subject", "Economics"),
             "level": metadata.get("level", "A-Level"),
             "year": metadata["year"],
             "session": metadata["session"],
-            "paper_number": metadata["paper_number"],
-            "total_marks": metadata.get("total_marks"),
+            "paper_number": metadata.get("paperNumber", metadata.get("paper_number")),
+            "total_marks": metadata.get("totalMarks", metadata.get("total_marks")),
             "uploaded_at": datetime.utcnow().isoformat()
         }
         
         paper_response = self.client.table("Paper").insert(paper_record).execute()
         
         for question in parsed_data["questions"]:
-            await self._store_question(paper_id, question)
+            self._store_question_sync(paper_id, question)
         
         return paper_response.data[0] if paper_response.data else paper_record
     
-    async def _store_question(self, paper_id: str, question_data: Dict[str, Any]):
-        """Store a single question with its content."""
+    def _store_question_sync(self, paper_id: str, question_data: Dict[str, Any]):
+        """Store a single question with its content (synchronous)."""
         question_id = str(uuid.uuid4())
         
         question_record = {
@@ -84,17 +84,17 @@ class DatabaseService:
         
         sequence = 0
         for content_item in question_data["content"]:
-            await self._store_content(
+            self._store_content_sync(
                 question_id, content_item, sequence,
                 paper_id, question_data["question_number"]
             )
             sequence += 1
     
-    async def _store_content(
+    def _store_content_sync(
         self, question_id: str, content_item: Dict[str, Any],
         sequence: int, paper_id: str, question_num: str
     ):
-        """Store a content element (text or image)."""
+        """Store a content element (text or image) (synchronous)."""
         content_id = str(uuid.uuid4())
         content_type = content_item["type"]
         data = content_item["data"]
@@ -119,7 +119,7 @@ class DatabaseService:
                 "height": data.get("height")
             })
         elif content_type == "IMAGE":
-            image_url = await self.storage.upload_image(
+            image_url = self.storage.upload_image_sync(
                 image_bytes=data["image_bytes"],
                 format=data["format"],
                 paper_id=paper_id,
@@ -142,18 +142,21 @@ class DatabaseService:
     
     def _generate_title(self, metadata: Dict[str, Any]) -> str:
         """Generate a title from metadata."""
+        exam_board = metadata.get("examBoard", metadata.get("exam_board"))
+        paper_number = metadata.get("paperNumber", metadata.get("paper_number"))
+        
         return (
-            f"{metadata['exam_board']} {metadata.get('subject', 'Economics')} "
-            f"{metadata.get('level', 'A-Level')} Paper {metadata['paper_number']} - "
+            f"{exam_board} {metadata.get('subject', 'Economics')} "
+            f"{metadata.get('level', 'A-Level')} Paper {paper_number} - "
             f"{metadata['session']} {metadata['year']}"
         )
     
-    async def get_paper(self, paper_id: str) -> Dict[str, Any]:
-        """Retrieve a paper with all questions and content."""
+    def get_paper_sync(self, paper_id: str) -> Dict[str, Any]:
+        """Retrieve a paper with all questions and content (synchronous)."""
         paper_response = self.client.table("Paper").select("*").eq("id", paper_id).execute()
         
         if not paper_response.data:
-            raise ValueError(f"Paper {paper_id} not found")
+            return None
         
         paper = paper_response.data[0]
         
